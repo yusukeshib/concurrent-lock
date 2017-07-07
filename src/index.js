@@ -7,7 +7,7 @@ export default class Lock {
     this._ee = new EventEmitter()
   }
   _waitUnlock(timeout) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       setTimeout(() => this._ee.emit('unlock', new Error('timeout')), timeout)
       this._ee.once('unlock', err => err ? reject(err) : resolve())
     })

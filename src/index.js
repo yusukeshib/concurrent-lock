@@ -3,7 +3,7 @@ import EventEmitter from 'event-emitter'
 export default class Lock {
   constructor(limit) {
     this._limit = limit || 1
-    this._lock = false
+    this._lock = 0
     this._ee = new EventEmitter()
   }
   _waitUnlock(timeout) {
@@ -13,7 +13,7 @@ export default class Lock {
     })
   }
   isLocked() {
-    return this._lock
+    return this._lock >= this._limit
   }
   async tryLock(timeout) {
     try {
@@ -24,13 +24,13 @@ export default class Lock {
     }
   }
   async lock(timeout) {
-    if(this._lock) await this._waitUnlock(timeout)
-    this._lock = true
+    if(this.isLocked()) await this._waitUnlock(timeout)
+    this._lock++
     this._ee.emit('lock')
   }
   unlock() {
-    if(!this._lock) throw 'Already unlocked!'
-    this._lock = false
+    if(this._lock <= 0) throw 'Already unlocked!'
+    this._lock--
     this._ee.emit('unlock')
   }
 }

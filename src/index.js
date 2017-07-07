@@ -8,7 +8,7 @@ export default class Lock {
   }
   _waitUnlock(timeout) {
     return new Promise((resolve, reject) => {
-      if(timeout) setTimeout(() => this._ee.emit('unlock', new Error('timeout')), timeout)
+      if(timeout !== undefined) setTimeout(() => this._ee.emit('unlock', new Error('Timeout')), timeout)
       this._ee.once('unlock', err => err ? reject(err) : resolve())
     })
   }
@@ -17,7 +17,7 @@ export default class Lock {
   }
   async tryLock(timeout) {
     try {
-      await this.lock(timeout)
+      await this.lock(timeout||0)
       return true
     } catch(err) {
       return false
@@ -29,7 +29,7 @@ export default class Lock {
     this._ee.emit('lock')
   }
   unlock() {
-    if(this._lock <= 0) throw 'Already unlocked!'
+    if(this._lock <= 0) throw new Error('Already unlocked')
     this._lock--
     this._ee.emit('unlock')
   }

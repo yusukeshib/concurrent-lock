@@ -1,0 +1,25 @@
+{
+  "name": "concurrent-lock",
+  "version": "1.0.0",
+  "description": "promise based concurrent implementation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yusukeshibata/concurrent-lock.git"
+  },
+  "keywords": [
+    "concurrent",
+    "promise",
+    "lock",
+    "semaphore"
+  ],
+  "author": "Yusuke Shibata",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yusukeshibata/concurrent-lock/issues"
+  },
+  "homepage": "https://github.com/yusukeshibata/concurrent-lock#readme"
+}

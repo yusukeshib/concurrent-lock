@@ -4,7 +4,10 @@
   "description": "promise based concurrent implementation.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "npm run build",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:fix": "eslint src --fix"
   },
   "repository": {
     "type": "git",
@@ -21,5 +24,21 @@
   "bugs": {
     "url": "https://github.com/yusukeshibata/concurrent-lock/issues"
   },
-  "homepage": "https://github.com/yusukeshibata/concurrent-lock#readme"
+  "homepage": "https://github.com/yusukeshibata/concurrent-lock#readme",
+  "dependencies": {
+    "event-emitter": "^0.3.5",
+    "regenerator-runtime": "^0.10.5"
+  },
+  "devDependencies": {
+    "webpack-node-externals": "^1.6.0",
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "eslint": "^4.0.0",
+    "eslint-loader": "^1.8.0",
+    "webpack": "^3.0.0"
+  }
 }

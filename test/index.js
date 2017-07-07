@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import should from 'should'
 import assert from 'assert'
-import Lock from '../src'
+import Lock from '..'
 import 'mocha'
 
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))

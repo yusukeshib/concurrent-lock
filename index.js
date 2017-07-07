@@ -848,52 +848,97 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Lock = function () {
-  function Lock() {
+  function Lock(limit) {
     _classCallCheck(this, Lock);
 
-    this._lock = false;
+    this._limit = limit || 1;
+    this._lock = 0;
     this._ee = new _eventEmitter2.default();
   }
 
   _createClass(Lock, [{
-    key: '_wait',
-    value: function _wait(type) {
+    key: '_waitUnlock',
+    value: function _waitUnlock(timeout) {
       var _this = this;
 
-      return new Promise(function (resolve) {
-        return _this._ee.once(type, resolve);
+      return new Promise(function (resolve, reject) {
+        if (timeout !== undefined) setTimeout(function () {
+          return _this._ee.emit('unlock', new Error('Timeout'));
+        }, timeout);
+        _this._ee.once('unlock', function (err) {
+          return err ? reject(err) : resolve();
+        });
       });
     }
   }, {
-    key: 'lock',
+    key: 'isLocked',
+    value: function isLocked() {
+      return this._lock >= this._limit;
+    }
+  }, {
+    key: 'tryLock',
     value: function () {
-      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(timeout) {
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!this._lock) {
-                  _context.next = 3;
-                  break;
-                }
-
+                _context.prev = 0;
                 _context.next = 3;
-                return this._wait('unlock');
+                return this.lock(timeout || 0);
 
               case 3:
-                this._lock = true;
-                this._ee.emit('lock');
+                return _context.abrupt('return', true);
 
-              case 5:
+              case 6:
+                _context.prev = 6;
+                _context.t0 = _context['catch'](0);
+                return _context.abrupt('return', false);
+
+              case 9:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee, this, [[0, 6]]);
       }));
 
-      function lock() {
+      function tryLock(_x) {
         return _ref.apply(this, arguments);
+      }
+
+      return tryLock;
+    }()
+  }, {
+    key: 'lock',
+    value: function () {
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(timeout) {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!this.isLocked()) {
+                  _context2.next = 3;
+                  break;
+                }
+
+                _context2.next = 3;
+                return this._waitUnlock(timeout);
+
+              case 3:
+                this._lock++;
+                this._ee.emit('lock');
+
+              case 5:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function lock(_x2) {
+        return _ref2.apply(this, arguments);
       }
 
       return lock;
@@ -901,8 +946,8 @@ var Lock = function () {
   }, {
     key: 'unlock',
     value: function unlock() {
-      if (!this._lock) throw 'Already unlocked!';
-      this._lock = false;
+      if (this._lock <= 0) throw new Error('Already unlocked');
+      this._lock--;
       this._ee.emit('unlock');
     }
   }]);

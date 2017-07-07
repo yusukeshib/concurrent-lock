@@ -4,7 +4,7 @@
   "description": "promise based concurrent implementation.",
   "main": "index.js",
   "scripts": {
-    "prepublishOnly": "npm test && npm run build",
+    "prepublishOnly": "npm run build && npm test",
     "build": "webpack",
     "test": "mocha --compilers js:babel-core/register",
     "lint:fix": "eslint src --fix"

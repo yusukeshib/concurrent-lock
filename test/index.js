@@ -1,4 +1,4 @@
-import 'regenerator-runtime/runtime'
+//import 'regenerator-runtime/runtime'
 import should from 'should'
 import assert from 'assert'
 import Lock from '..'

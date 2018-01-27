@@ -21,12 +21,9 @@ const lock = new Lock(1)
 Lock and unlock.
 ```js
 async somefunc() {
-  try {
-    await lock.lock()
-    // ...some async proc...
-  } catch(err) {
-    lock.unlock()
-  }
+  await lock.lock()
+  await someAsyncProcess()
+  lock.unlock()
 }
 ```
 
@@ -37,19 +34,9 @@ async somefunc() {
   try {
     await lock.lock(3000)
     // ...some async proc...
+    lock.unlock()
   } catch(err) {
-    lock.unlock()
-  }
-}
-```
-
-`tryLock` will return true|false, and never throw timeout errors.
-```js
-async somefunc() {
-  // specify timeout millisec.
-  if(await lock.tryLock(2000)) {
-    // ...some async proc...
-    lock.unlock()
+    // Timeout error will be catched.
   }
 }
 ```

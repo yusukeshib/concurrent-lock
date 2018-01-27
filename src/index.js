@@ -1,48 +1,39 @@
 // only firable once
 class Signal {
-  constructor(fn) {
-    this._fn = fn
-    this._fired = false
+  fire(err) {
+    const fn = this._fn
+    delete this._fn
+    if(fn) fn(err)
   }
-  fire() {
-    if(this._fired) return
-    this._fired = true
-    this._fn.apply(this, arguments)
+  wait(timeout) {
+    return new Promise((resolve, reject) => {
+      this._fn = err => err ? reject(err) : resolve()
+      setTimeout(() => this.fire(new Error('Timeout')), timeout)
+    })
   }
 }
 
 export default class Lock {
-  constructor(limit) {
-    this._limit = limit || 1
-    this._lock = 0
-    this._queue = []
-  }
-  _wait(timeout) {
-    return new Promise((resolve, reject) => {
-      const signal = new Signal(err => err ? reject(err) : resolve())
-      this._queue.push(signal)
-      if(timeout !== undefined) setTimeout(() => signal.fire(new Error('Timeout')), timeout)
-    })
+  constructor(limit = 1) {
+    this._limit = limit
+    this._locked = 0
+    this._waiters = []
   }
   isLocked() {
-    return this._lock >= this._limit
-  }
-  async tryLock(timeout) {
-    try {
-      await this.lock(timeout || 0)
-      return true
-    } catch(err) {
-      return false
-    }
+    return this._locked >= this._limit
   }
   async lock(timeout) {
-    if(this.isLocked()) await this._wait(timeout)
-    this._lock++
+    if(this.isLocked()) {
+      const signal = new Signal()
+      this._waiters.push(signal)
+      await signal.wait(timeout)
+    }
+    this._locked++
   }
   unlock() {
-    if(this._lock <= 0) throw new Error('Already unlocked')
-    this._lock--
-    const signal = this._queue.shift()
+    if(this._locked <= 0) throw new Error('Already unlocked')
+    this._locked--
+    const signal = this._waiters.shift()
     if(signal) {
       signal.fire()
     }

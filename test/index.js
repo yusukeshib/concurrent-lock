@@ -22,37 +22,43 @@ it('Lock object should be unlocked after unlock.', async () => {
 
 it('Unlocking already unlocked object should throw error.', async () => {
   const lock = new Lock()
+  let err
   try {
     lock.unlock()
-  } catch(err) {
-    should(err).be.instanceOf(Error)
-    should(err).have.property('message')
-    should(err.message).be.exactly('Already unlocked')
+  } catch(_err) {
+    err = _err
   }
+  should(err).be.instanceOf(Error)
+  should(err).have.property('message')
+  should(err.message).be.exactly('Already unlocked')
 })
 
-it('Lock object should be timeout after specified timeout elapsed.', async () => {
+it('Lock object should timeout after specified timeout elapsed.', async () => {
   const lock = new Lock()
   await lock.lock()
+  let err
   try {
     await lock.lock(50)
-  } catch(err) {
-    should(err).be.instanceOf(Error)
-    should(err).have.property('message')
-    should(err.message).be.exactly('Timeout')
+  } catch(_err) {
+    err = _err
   }
+  should(err).be.instanceOf(Error)
+  should(err).have.property('message')
+  should(err.message).be.exactly('Timeout')
 })
 
 it('locking should not be passed twice if concurrent limit===1.', async () => {
   const lock = new Lock(1)
   await lock.lock(0)
+  let err
   try {
     await lock.lock(0)
-  } catch(err) {
-    should(err).be.instanceOf(Error)
-    should(err).have.property('message')
-    should(err.message).be.exactly('Timeout')
+  } catch(_err) {
+    err = _err
   }
+  should(err).be.instanceOf(Error)
+  should(err).have.property('message')
+  should(err.message).be.exactly('Timeout')
 })
 
 it('locking should be passed twice if concurrent limit===2.', async () => {
@@ -61,24 +67,28 @@ it('locking should be passed twice if concurrent limit===2.', async () => {
   should(lock.isLocked()).be.exactly(false)
   await lock.lock()
   should(lock.isLocked()).be.exactly(true)
+  let err
   try {
     await lock.lock(0)
-  } catch(err) {
-    should(err).be.instanceOf(Error)
-    should(err).have.property('message')
-    should(err.message).be.exactly('Timeout')
+  } catch(_err) {
+    err = _err
   }
+  should(err).be.instanceOf(Error)
+  should(err).have.property('message')
+  should(err.message).be.exactly('Timeout')
 })
 
 it('tryLock should timeout if already locked.', async () => {
   const lock = new Lock()
   await lock.lock()
+  let err
   try {
     await lock.lock(50)
-  } catch(err) {
-    should(err).be.instanceOf(Error)
-    should(err).have.property('message')
-    should(err.message).be.exactly('Timeout')
+  } catch(_err) {
+    err = _err
   }
+  should(err).be.instanceOf(Error)
+  should(err).have.property('message')
+  should(err.message).be.exactly('Timeout')
 })
 

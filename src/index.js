@@ -8,7 +8,7 @@ class Signal {
   wait(timeout) {
     return new Promise((resolve, reject) => {
       this._fn = err => err ? reject(err) : resolve()
-      setTimeout(() => this.fire(new Error('Timeout')), timeout)
+      if(timeout !== undefined) setTimeout(() => this.fire(new Error('Timeout')), timeout)
     })
   }
 }

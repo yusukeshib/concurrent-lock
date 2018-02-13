@@ -6,6 +6,21 @@ import 'mocha'
 
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
 
+it('test1', async () => {
+  const lock = new Lock(1)
+  await Promise.all([0,1,2,3,4].map(async () => {
+    let err
+    try {
+      await lock.lock()
+      await sleep(5)
+      lock.unlock()
+    } catch(_err) {
+      err = _err
+    }
+    should(err).be.exactly(undefined)
+  }))
+})
+
 it('Lock object should be locked between lock and unlock.', async () => {
   const lock = new Lock()
   await lock.lock()

@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import should from 'should'
 import assert from 'assert'
 import Lock from '..'
